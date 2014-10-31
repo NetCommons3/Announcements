@@ -114,8 +114,6 @@ class Announcement extends AnnouncementsAppModel {
 		if (! $announcement) {
 			$announcement = $this->create();
 			$announcement['Announcement']['content'] = '';
-			$announcement['Announcement']['status'] = '0';
-			$announcement['Announcement']['block_id'] = '0';
 			$announcement['Announcement']['key'] = '';
 			$announcement['Announcement']['id'] = '0';
 		}

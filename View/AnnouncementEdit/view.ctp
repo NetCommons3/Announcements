@@ -30,6 +30,19 @@
 			</p>
 
 			<?php echo $this->element('AnnouncementEdit/button'); ?>
+
+			<?php
+//$this->Paginator->options(array('url' => 'comment_history'));
+
+//var_dump($this->Paginator->url());
+
+echo $this->Paginator->prev('< 前へ', array('ng-click' => 'movePage($event)', 'onclick' => 'return false;'), null, array('class' => 'prev disabled'));
+echo $this->Paginator->next('次へ >', array('ng-click' => 'movePage($event)', 'onclick' => 'return false;'), null, array('class' => 'next disabled'));
+?>
+ <?php //foreach($comments as $v): ?>
+ <?php //echo $v['Announcement']['id']; ?>
+ <?php //endforeach; ?>
+
 		</div>
 	</div>
 </div>

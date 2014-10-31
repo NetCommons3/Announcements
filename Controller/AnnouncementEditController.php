@@ -37,6 +37,7 @@ class AnnouncementEditController extends AnnouncementsAppController {
 		'NetCommons.NetCommonsBlock', //use Announcement model or view
 		'NetCommons.NetCommonsFrame',
 		'NetCommons.NetCommonsRoomRole',
+		'Paginator'
 	);
 
 /**
@@ -78,6 +79,7 @@ class AnnouncementEditController extends AnnouncementsAppController {
  * @throws ForbiddenException
  */
 	public function view($frameId = 0) {
+//var_dump($this->params, $this->params['named']['page']);
 		//Frameのデータをviewにセット
 		if (! $this->NetCommonsFrame->setView($this, $frameId)) {
 			throw new ForbiddenException();
@@ -89,7 +91,26 @@ class AnnouncementEditController extends AnnouncementsAppController {
 				$this->viewVars['contentEditable']
 			);
 
+		//var_dump($this->params);
+
 		$this->set('announcement', $announcement);
+
+		//コメントデータを取得
+		$this->Announcement->unbindModel(array('belongsTo' => array('Block')), false);
+		$this->Paginator->settings = array(
+			'Announcement' => array(
+				'conditions' => array('Announcement.block_id' => $this->viewVars['blockId']),
+				'limit' => 2,
+				'order' => 'Announcement.id DESC',
+			)
+		);
+		$comments = $this->Paginator->paginate('Announcement');
+		$this->Announcement->bindModel(array('belongsTo' => array('Block')), false);
+var_dump($comments);
+
+		//$this->helpers['Paginator'] = array('ajax' => 'Ajax');
+
+		$this->set('comments', $comments);
 
 		return $this->render('AnnouncementEdit/view', false);
 	}

@@ -147,6 +147,53 @@ NetCommonsApp.controller('Announcements.edit',
        *
        * @return {void}
        */
+      $scope.movePage = function(event) {
+        console.log(event);
+        console.log(event.target.href);
+
+        var page = event.target.href.match(/page:[0-9]+/);
+        if (page) {
+          console.log($scope.PLUGIN_EDIT_URL + 'view/comment_history/' + page);
+
+          console.log(page[0]);
+
+          $http.get($scope.PLUGIN_EDIT_URL + 'comment/' +
+                     $scope.frameId + '/' + page + '.json')
+               .success(function(data) {
+//                 //フォームエレメント生成
+//                 var form = $('<div>').html(data);
+//
+//                 //セキュリティキーセット
+//                 $scope.edit.data._Token.key =
+//                     $(form).find('input[name="data[_Token][key]"]').val();
+//                 $scope.edit.data._Token.fields =
+//                     $(form).find('input[name="data[_Token][fields]"]').val();
+//                 $scope.edit.data._Token.unlocked =
+//                     $(form).find('input[name="data[_Token][unlocked]"]').val();
+//
+//                 //ステータスセット
+//                 $scope.edit.data.Announcement.status = status;
+//
+//                 //登録情報をPOST
+//                 $scope.sendPost($scope.edit);
+               })
+               .error(function(data, status) {
+                 //keyの取得に失敗
+//                 $scope.flash.danger(status + ' ' + data.name);
+//                 $scope.sending = false;
+               });
+
+
+
+
+        }
+      };
+
+      /**
+       * dialog cancel
+       *
+       * @return {void}
+       */
       $scope.cancel = function() {
         $modalStack.dismissAll('canceled');
       };
