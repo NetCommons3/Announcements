@@ -50,6 +50,19 @@ class AnnouncementEditController extends AnnouncementsAppController {
 		parent::beforeFilter();
 		$this->Auth->allow();
 
+		if (isset($this->data['Frame']['id'])) {
+			$frameId = (int)$this->data['Frame']['id'];
+		} else if (isset($this->params['pass'][0])) {
+			$frameId = (int)$this->params['pass'][0];
+		} else {
+			$frameId = 0;
+		}
+
+		//Frameのデータをviewにセット
+		if (! $this->NetCommonsFrame->setView($this, $frameId)) {
+			throw new ForbiddenException();
+		}
+
 		//Roleのデータをviewにセット
 		if (! $this->NetCommonsRoomRole->setView($this)) {
 			throw new ForbiddenException();
@@ -80,10 +93,6 @@ class AnnouncementEditController extends AnnouncementsAppController {
  */
 	public function view($frameId = 0) {
 //var_dump($this->params, $this->params['named']['page']);
-		//Frameのデータをviewにセット
-		if (! $this->NetCommonsFrame->setView($this, $frameId)) {
-			throw new ForbiddenException();
-		}
 
 		//Announcementデータを取得
 		$announcement = $this->Announcement->getAnnouncement(
@@ -96,23 +105,50 @@ class AnnouncementEditController extends AnnouncementsAppController {
 		$this->set('announcement', $announcement);
 
 		//コメントデータを取得
+		$this->__setViewComment();
+
+		return $this->render('AnnouncementEdit/view', false);
+	}
+
+/**
+ * view method
+ *
+ * @param int $frameId frames.id
+ * @return CakeResponse A response object containing the rendered view.
+ * @throws ForbiddenException
+ */
+	public function comment($frameId = 0) {
+//var_dump($this->params, $this->params['named']['page']);
+
+		//コメントデータを取得
+		$this->__setViewComment();
+
+		return $this->render('AnnouncementEdit/comment', false);
+	}
+/**
+ * view method
+ *
+ * @return void
+ */
+	private function __setViewComment() {
+
+		//コメントデータを取得
 		$this->Announcement->unbindModel(array('belongsTo' => array('Block')), false);
 		$this->Paginator->settings = array(
 			'Announcement' => array(
-				'conditions' => array('Announcement.block_id' => $this->viewVars['blockId']),
+				'conditions' => array(
+					'Announcement.block_id' => $this->viewVars['blockId'],
+					//'Announcement.comment !=' => '',
+				),
 				'limit' => 2,
 				'order' => 'Announcement.id DESC',
 			)
 		);
 		$comments = $this->Paginator->paginate('Announcement');
 		$this->Announcement->bindModel(array('belongsTo' => array('Block')), false);
-var_dump($comments);
-
-		//$this->helpers['Paginator'] = array('ajax' => 'Ajax');
-
 		$this->set('comments', $comments);
-
-		return $this->render('AnnouncementEdit/view', false);
+//var_dump($comments);
+		return;
 	}
 
 /**
@@ -140,12 +176,6 @@ var_dump($comments);
 
 		$postData = $this->data;
 		unset($postData['Announcement']['id']);
-
-		$frameId = (isset($postData['Frame']['id']) ? (int)$postData['Frame']['id'] : 0);
-		//Frameのデータをviewにセット
-		if (! $this->NetCommonsFrame->setView($this, $frameId)) {
-			throw new ForbiddenException();
-		}
 
 		//登録
 		$result = $this->Announcement->saveAnnouncement($postData);

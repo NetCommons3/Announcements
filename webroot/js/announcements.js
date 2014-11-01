@@ -63,7 +63,9 @@ NetCommonsApp.controller('Announcements',
           backdrop: 'static',
           scope: $scope
         }).result.then(
-            function(result) {},
+            function(result) {
+//$scope.$apply(function() {alert(1);});
+            },
             function(reason) {
               if (typeof reason.data === 'object') {
                 //openによるエラー
@@ -99,6 +101,25 @@ NetCommonsApp.controller('Announcements.edit',
                          function($scope, $http, $modalStack) {
 
       /**
+       * paginator
+       *
+       * @type {Object.<string>}
+       */
+      $scope.paginator = {
+        'current': 1,
+        'hasPrev': false,
+        'nextPrev': false
+      };
+
+      /**
+       * comments
+       *
+       * @type {Object.<string>}
+       */
+      $scope.comments = [];
+      $scope.commentHtml = '';
+
+      /**
        * sending
        *
        * @type {string}
@@ -124,6 +145,7 @@ NetCommonsApp.controller('Announcements.edit',
         $scope.edit.data = {
           Announcement: {
             content: $scope.announcement.Announcement.content,
+            comment: '',
             status: $scope.announcement.Announcement.status,
             block_id: $scope.announcement.Announcement.block_id,
             key: $scope.announcement.Announcement.key,
@@ -143,50 +165,62 @@ NetCommonsApp.controller('Announcements.edit',
       $scope.initialize();
 
       /**
+       * prev page
+       *
+       * @return {void}
+       */
+      $scope.prevPage = function() {
+        if (! $scope.paginator.hasPrev) {
+          return;
+        }
+        $scope.movePage($scope.paginator.current - 1);
+        // b$scope.$apply();
+      };
+
+      /**
+       * next page
+       *
+       * @return {void}
+       */
+      $scope.nextPage = function() {
+        if (! $scope.paginator.hasNext) {
+          return;
+        }
+        $scope.movePage($scope.paginator.current + 1);
+        //$scope.$apply();
+      };
+
+      /**
        * dialog cancel
        *
        * @return {void}
        */
-      $scope.movePage = function(event) {
-        console.log(event);
-        console.log(event.target.href);
-
-        var page = event.target.href.match(/page:[0-9]+/);
-        if (page) {
-          console.log($scope.PLUGIN_EDIT_URL + 'view/comment_history/' + page);
-
-          console.log(page[0]);
-
+      $scope.movePage = function(page) {
+        //$scope.$apply(function() {
           $http.get($scope.PLUGIN_EDIT_URL + 'comment/' +
-                     $scope.frameId + '/' + page + '.json')
+                     $scope.frameId + '/page:' + page + '.json')
                .success(function(data) {
-//                 //フォームエレメント生成
-//                 var form = $('<div>').html(data);
-//
-//                 //セキュリティキーセット
-//                 $scope.edit.data._Token.key =
-//                     $(form).find('input[name="data[_Token][key]"]').val();
-//                 $scope.edit.data._Token.fields =
-//                     $(form).find('input[name="data[_Token][fields]"]').val();
-//                 $scope.edit.data._Token.unlocked =
-//                     $(form).find('input[name="data[_Token][unlocked]"]').val();
-//
-//                 //ステータスセット
-//                 $scope.edit.data.Announcement.status = status;
-//
-//                 //登録情報をPOST
-//                 $scope.sendPost($scope.edit);
+                  $scope.paginator.current = data.current;
+                  $scope.paginator.hasPrev = data.hasPrev;
+                  $scope.paginator.hasNext = data.hasNext;
+                  $scope.comments = data.comments;
+//                  setTimeout(function() {
+//                    $scope.$apply();
+////                      $scope.$apply(function() {
+////                          $scope.paginator.current = data.current;
+////                          $scope.paginator.hasPrev = data.hasPrev;
+////                          $scope.paginator.hasNext = data.hasNext;
+////                          $scope.comments = data.comments;
+////
+////                          console.log($scope.comments);
+////                      });
+//                    }, 1000);
                })
                .error(function(data, status) {
                  //keyの取得に失敗
-//                 $scope.flash.danger(status + ' ' + data.name);
-//                 $scope.sending = false;
+                 $scope.flash.danger(data.name);
                });
-
-
-
-
-        }
+        //});
       };
 
       /**

@@ -10,7 +10,21 @@
  */
 ?>
 
-<p class="text-center">
+<?php
+	echo $this->Form->input('Announcement.comment', array(
+				'label' => __d('net_commons', 'Comment'),
+				'rows' => '1',
+				'type' => 'textarea',
+				'class' => 'form-control',
+				'ng-model' => 'edit.data.Announcement.comment',
+				'placeholder' => __d('net_commons', 'If it is not approved, please input.'),
+				'autofocus' => 'true',
+			)
+		);
+?>
+
+<br />
+<div class="text-center">
 	<button type="button" class="btn btn-default" ng-click="cancel()" ng-disabled="sending">
 		<span class="glyphicon glyphicon-remove"></span>
 		<?php echo __d('net_commons', 'Cancel'); ?>
@@ -51,4 +65,4 @@
 
 	<?php endif; ?>
 
-</p>
+</div>

@@ -125,7 +125,31 @@ class Announcements extends CakeMigration {
  *
  * @var array $migration
  */
-	public $records = array();
+	public $records = array(
+		'Plugin' => array(
+			array(
+				'language_id' => 2,
+				'key' => 'announcements',
+				'namespace' => 'netcommons/announcements',
+				'name' => 'お知らせ',
+				'type' => 1,
+			),
+		),
+
+		'PluginsRole' => array(
+			array(
+				'role_key' => 'room_administrator',
+				'plugin_key' => 'announcements'
+			),
+		),
+
+		'PluginsRoom' => array(
+			array(
+				'room_id' => '1',
+				'plugin_key' => 'announcements'
+			),
+		),
+	);
 
 /**
  * Before migration callback

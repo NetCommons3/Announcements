@@ -17,6 +17,12 @@ echo $this->Form->input('Announcement.content', array(
 		)
 	);
 
+echo $this->Form->input('Announcement.comment', array(
+			'type' => 'textarea',
+			'value' => '',
+		)
+	);
+
 if ($contentPublishable) {
 	$options = array(
 		NetCommonsBlockComponent::STATUS_PUBLISHED,
