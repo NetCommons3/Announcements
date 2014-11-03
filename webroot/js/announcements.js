@@ -8,10 +8,10 @@
  * Announcements Javascript
  *
  * @param {string} Controller name
- * @param {function($scope, $sce, $modal, $modalStack)} Controller
+ * @param {function($scope, $http, $sce, $modal, $modalStack)} Controller
  */
 NetCommonsApp.controller('Announcements',
-                         function($scope, $sce, $modal, $modalStack) {
+                         function($scope, $http, $sce, $modal, $modalStack) {
 
       /**
        * Announcements plugin view url
@@ -35,6 +35,20 @@ NetCommonsApp.controller('Announcements',
       $scope.announcement = {};
 
       /**
+       * comments
+       *
+       * @type {Object.<string>}
+       */
+      $scope.comments = {};
+
+      /**
+       * daialog opened
+       *
+       * @type {bool}
+       */
+      $scope.isOpenedEdit = false;
+
+      /**
        * Initialize
        *
        * @return {void}
@@ -50,6 +64,33 @@ NetCommonsApp.controller('Announcements',
        * @return {void}
        */
       $scope.showManage = function() {
+        //初回は、ダイアログ表示時に最新データを取得する
+        if (! $scope.isOpenedEdit) {
+          $scope.openManage();
+          return;
+        }
+
+        //二回目以降はキャッシュが使われるため、最新のデータを取得して、
+        //$modal.openを呼び出す
+        $http.get($scope.PLUGIN_EDIT_URL + 'view_latest/' +
+                   $scope.frameId + '.json')
+            .success(function(data) {
+              //最新データセット
+              angular.copy(data.announcement, $scope.announcement);
+              $scope.openManage();
+            })
+            .error(function(data) {
+              //keyの取得に失敗
+              $scope.flash.danger(data.name);
+            });
+      };
+
+      /**
+       * Show manage dialog
+       *
+       * @return {void}
+       */
+      $scope.openManage = function() {
         //既に開いているモーダルウィンドウをキャンセルする
         $modalStack.dismissAll('canceled');
 
@@ -61,21 +102,22 @@ NetCommonsApp.controller('Announcements',
           templateUrl: templateUrl,
           controller: controller,
           backdrop: 'static',
-          scope: $scope
+          scope: $scope,
+          rootScope: $scope
         }).result.then(
-            function(result) {
-//$scope.$apply(function() {alert(1);});
-            },
+            function(result) {},
             function(reason) {
               if (typeof reason.data === 'object') {
                 //openによるエラー
-                $scope.flash.danger(reason.status + ' ' + reason.data.name);
+                $scope.flash.danger(reason.data.name);
               } else if (reason === 'canceled') {
                 //キャンセル
                 $scope.flash.close();
               }
             }
-        );
+        ).finally(function() {
+          $scope.isOpenedEdit = true;
+        });
       };
 
       /**
@@ -101,28 +143,23 @@ NetCommonsApp.controller('Announcements.edit',
                          function($scope, $http, $modalStack) {
 
       /**
-       * paginator
-       *
-       * @type {Object.<string>}
-       */
-      $scope.paginator = {
-        'current': 1,
-        'hasPrev': false,
-        'nextPrev': false
-      };
-
-      /**
        * comments
        *
        * @type {Object.<string>}
        */
-      $scope.comments = [];
-      $scope.commentHtml = '';
+      //$scope.comments = {};
+
+      /**
+       * placeholders
+       *
+       * @type {Object.<string>}
+       */
+      $scope.placeholders = {};
 
       /**
        * sending
        *
-       * @type {string}
+       * @type {bool}
        */
       $scope.sending = false;
 
@@ -160,67 +197,9 @@ NetCommonsApp.controller('Announcements.edit',
             unlocked: ''
           }
         };
-      };
-      // initialize()
-      $scope.initialize();
 
-      /**
-       * prev page
-       *
-       * @return {void}
-       */
-      $scope.prevPage = function() {
-        if (! $scope.paginator.hasPrev) {
-          return;
-        }
-        $scope.movePage($scope.paginator.current - 1);
-        // b$scope.$apply();
-      };
-
-      /**
-       * next page
-       *
-       * @return {void}
-       */
-      $scope.nextPage = function() {
-        if (! $scope.paginator.hasNext) {
-          return;
-        }
-        $scope.movePage($scope.paginator.current + 1);
-        //$scope.$apply();
-      };
-
-      /**
-       * dialog cancel
-       *
-       * @return {void}
-       */
-      $scope.movePage = function(page) {
-        //$scope.$apply(function() {
-          $http.get($scope.PLUGIN_EDIT_URL + 'comment/' +
-                     $scope.frameId + '/page:' + page + '.json')
-               .success(function(data) {
-                  $scope.paginator.current = data.current;
-                  $scope.paginator.hasPrev = data.hasPrev;
-                  $scope.paginator.hasNext = data.hasNext;
-                  $scope.comments = data.comments;
-//                  setTimeout(function() {
-//                    $scope.$apply();
-////                      $scope.$apply(function() {
-////                          $scope.paginator.current = data.current;
-////                          $scope.paginator.hasPrev = data.hasPrev;
-////                          $scope.paginator.hasNext = data.hasNext;
-////                          $scope.comments = data.comments;
-////
-////                          console.log($scope.comments);
-////                      });
-//                    }, 1000);
-               })
-               .error(function(data, status) {
-                 //keyの取得に失敗
-                 $scope.flash.danger(data.name);
-               });
-        //});
+        $scope.getComments(1);
+        $scope.comments.visibility = false;
       };
 
       /**
@@ -265,9 +244,9 @@ NetCommonsApp.controller('Announcements.edit',
               //登録情報をPOST
               $scope.sendPost($scope.edit);
             })
-            .error(function(data, status) {
+            .error(function(data) {
               //keyの取得に失敗
-              $scope.flash.danger(status + ' ' + data.name);
+              $scope.flash.danger(data.name);
               $scope.sending = false;
             });
       };
@@ -288,10 +267,82 @@ NetCommonsApp.controller('Announcements.edit',
               $scope.sending = false;
               $modalStack.dismissAll('saved');
             })
-          .error(function(data, status) {
-              $scope.flash.danger(status + ' ' + data.name);
+          .error(function(data) {
+              $scope.flash.danger(data.name);
               $scope.sending = false;
             });
       };
 
+      /**
+       * Comment list of visibility
+       *
+       * @return {void}
+       */
+      $scope.displayComments = function() {
+        $scope.comments.visibility = ! $scope.comments.visibility;
+      };
+
+      /**
+       * Comment list of prev page
+       *
+       * @return {void}
+       */
+      $scope.prevComments = function() {
+        if (! $scope.comments.hasPrev) {
+          return;
+        }
+        $scope.getComments($scope.comments.current - 1);
+      };
+
+      /**
+       * Comment list of next page
+       *
+       * @return {void}
+       */
+      $scope.nextComments = function() {
+        if (! $scope.comments.hasNext) {
+          return;
+        }
+        $scope.getComments($scope.comments.current + 1);
+      };
+
+      /**
+       * get comments
+       *
+       * @return {void}
+       */
+      $scope.getComments = function(page) {
+        $http.get($scope.PLUGIN_EDIT_URL + 'comment/' +
+                   $scope.frameId + '/page:' + page + '.json')
+            .success(function(data) {
+              $scope.comments.current = data.comments.current;
+              $scope.comments.hasPrev = data.comments.hasPrev;
+              $scope.comments.hasNext = data.comments.hasNext;
+              $scope.comments.data = data.comments.data;
+              $scope.comments.disabled =
+                                data.comments.data.length === 0 ? true : false;
+              if ($scope.comments.disabled) {
+                $scope.comments.visibility = false;
+              }
+            })
+            .error(function(data) {
+              //keyの取得に失敗
+              $scope.flash.danger(data.name);
+            });
+      };
+
+      /**
+       * Comment list of visibility
+       *
+       * @return {void}
+       */
+      $scope.setPlaceholder = function(key, value) {
+        if (key === 'comment') {
+          var status = $scope.announcement.Announcement.status;
+          $scope.placeholders[key] =
+                          (status === $scope.STATUS_APPROVED ? value : '');
+        } else {
+          $scope.placeholders[key] = value;
+        }
+      };
     });

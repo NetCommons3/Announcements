@@ -22,6 +22,13 @@ App::uses('AnnouncementsAppModel', 'Announcements.Model');
 class Announcement extends AnnouncementsAppModel {
 
 /**
+ * comment text length
+ *
+ * @var int
+ */
+	const COMMENT_LENGTH = 50;
+
+/**
  * Validation rules
  *
  * @var array
@@ -87,7 +94,7 @@ class Announcement extends AnnouncementsAppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
-		)
+		),
 	);
 
 /**

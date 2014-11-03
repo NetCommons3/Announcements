@@ -92,22 +92,32 @@ class AnnouncementEditController extends AnnouncementsAppController {
  * @throws ForbiddenException
  */
 	public function view($frameId = 0) {
-//var_dump($this->params, $this->params['named']['page']);
-
 		//Announcementデータを取得
 		$announcement = $this->Announcement->getAnnouncement(
 				$this->viewVars['blockId'],
 				$this->viewVars['contentEditable']
 			);
 
-		//var_dump($this->params);
-
 		$this->set('announcement', $announcement);
 
-		//コメントデータを取得
-		$this->__setViewComment();
+		if ($this->params['action'] === 'view' || $this->params['action'] === 'index') {
+			return $this->render('AnnouncementEdit/view', false);
+		}
+	}
 
-		return $this->render('AnnouncementEdit/view', false);
+/**
+ * view latest
+ *
+ * @param int $frameId frames.id
+ * @return CakeResponse A response object containing the rendered view.
+ * @throws ForbiddenException
+ */
+	public function view_latest($frameId = 0) {
+		//最新データ取得
+		$this->view($frameId);
+		//$this->comment($frameId);
+
+		return $this->render('AnnouncementEdit/view_latest', false);
 	}
 
 /**
@@ -118,37 +128,25 @@ class AnnouncementEditController extends AnnouncementsAppController {
  * @throws ForbiddenException
  */
 	public function comment($frameId = 0) {
-//var_dump($this->params, $this->params['named']['page']);
-
-		//コメントデータを取得
-		$this->__setViewComment();
-
-		return $this->render('AnnouncementEdit/comment', false);
-	}
-/**
- * view method
- *
- * @return void
- */
-	private function __setViewComment() {
-
 		//コメントデータを取得
 		$this->Announcement->unbindModel(array('belongsTo' => array('Block')), false);
 		$this->Paginator->settings = array(
 			'Announcement' => array(
 				'conditions' => array(
 					'Announcement.block_id' => $this->viewVars['blockId'],
-					//'Announcement.comment !=' => '',
+					'Announcement.comment !=' => '',
 				),
-				'limit' => 2,
+				'limit' => 5,
 				'order' => 'Announcement.id DESC',
 			)
 		);
 		$comments = $this->Paginator->paginate('Announcement');
 		$this->Announcement->bindModel(array('belongsTo' => array('Block')), false);
 		$this->set('comments', $comments);
-//var_dump($comments);
-		return;
+
+		if ($this->params['action'] === 'comment') {
+			return $this->render('AnnouncementEdit/comment', false);
+		}
 	}
 
 /**
@@ -183,6 +181,7 @@ class AnnouncementEditController extends AnnouncementsAppController {
 			throw new ForbiddenException(__d('net_commons', 'Failed to register data.'));
 		}
 
+		//最新データ取得
 		$announcement = $this->Announcement->getAnnouncement(
 				$result['Announcement']['block_id'],
 				$this->viewVars['contentEditable']
