@@ -16,9 +16,8 @@
 	<div class="tab-content">
 		<div id="nc-announcements-edit-<?php echo $frameId; ?>"
 				class="tab-pane active">
-			<form action="/announcements/announcement_edit/view/<?php echo $frameId; ?>/"
-					id="AnnouncementFormForm<?php echo $frameId; ?>"
-					ng-init="initialize()">
+			<?php echo $this->Form->create('Announcement' . (int)$frameId,
+											array('ng-init' => 'initialize()')); ?>
 
 				<div class="panel panel-default">
 					<div class="panel-heading">
@@ -55,7 +54,8 @@
 				</div>
 
 				<?php echo $this->element('AnnouncementEdit/common_form'); ?>
-			</form>
+
+			<?php echo $this->Form->end(); ?>
 		</div>
 	</div>
 </div>

@@ -9,7 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-echo $this->Form->create(null);
+echo $this->Form->create('Announcement' . (int)$frameId);
 
 echo $this->Form->input('Announcement.content', array(
 			'type' => 'textarea',

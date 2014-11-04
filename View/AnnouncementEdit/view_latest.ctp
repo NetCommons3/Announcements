@@ -13,12 +13,12 @@
 
 $result = array(
 	'announcement' => $announcement,
-//	'comments' => array(
-//		'data' => $comments,
-//		'current' => $this->Paginator->current(),
-//		'hasPrev' => $this->Paginator->hasPrev(),
-//		'hasNext' => $this->Paginator->hasNext(),
-//	)
+	'comments' => array(
+		'data' => $comments,
+		'current' => $this->Paginator->current(),
+		'hasPrev' => $this->Paginator->hasPrev(),
+		'hasNext' => $this->Paginator->hasNext(),
+	)
 );
 
 echo json_encode($result);

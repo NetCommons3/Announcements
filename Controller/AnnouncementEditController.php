@@ -50,13 +50,7 @@ class AnnouncementEditController extends AnnouncementsAppController {
 		parent::beforeFilter();
 		$this->Auth->allow();
 
-		if (isset($this->data['Frame']['id'])) {
-			$frameId = (int)$this->data['Frame']['id'];
-		} else if (isset($this->params['pass'][0])) {
-			$frameId = (int)$this->params['pass'][0];
-		} else {
-			$frameId = 0;
-		}
+		$frameId = (int)$this->params['pass'][0];
 
 		//Frameのデータをviewにセット
 		if (! $this->NetCommonsFrame->setView($this, $frameId)) {
@@ -115,7 +109,7 @@ class AnnouncementEditController extends AnnouncementsAppController {
 	public function view_latest($frameId = 0) {
 		//最新データ取得
 		$this->view($frameId);
-		//$this->comment($frameId);
+		$this->comment($frameId);
 
 		return $this->render('AnnouncementEdit/view_latest', false);
 	}
@@ -163,11 +157,12 @@ class AnnouncementEditController extends AnnouncementsAppController {
 /**
  * post method
  *
+ * @param int $frameId frames.id
  * @return string JSON that indicates success
  * @throws MethodNotAllowedException
  * @throws ForbiddenException
  */
-	public function edit() {
+	public function edit($frameId = 0) {
 		if (! $this->request->isPost()) {
 			throw new MethodNotAllowedException();
 		}

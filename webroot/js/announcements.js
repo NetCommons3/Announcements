@@ -42,13 +42,6 @@ NetCommonsApp.controller('Announcements',
       $scope.comments = {};
 
       /**
-       * daialog opened
-       *
-       * @type {bool}
-       */
-      $scope.isOpenedEdit = false;
-
-      /**
        * Initialize
        *
        * @return {void}
@@ -64,60 +57,44 @@ NetCommonsApp.controller('Announcements',
        * @return {void}
        */
       $scope.showManage = function() {
-        //初回は、ダイアログ表示時に最新データを取得する
-        if (! $scope.isOpenedEdit) {
-          $scope.openManage();
-          return;
-        }
-
-        //二回目以降はキャッシュが使われるため、最新のデータを取得して、
-        //$modal.openを呼び出す
-        $http.get($scope.PLUGIN_EDIT_URL + 'view_latest/' +
-                   $scope.frameId + '.json')
-            .success(function(data) {
-              //最新データセット
-              angular.copy(data.announcement, $scope.announcement);
-              $scope.openManage();
-            })
-            .error(function(data) {
-              //keyの取得に失敗
-              $scope.flash.danger(data.name);
-            });
-      };
-
-      /**
-       * Show manage dialog
-       *
-       * @return {void}
-       */
-      $scope.openManage = function() {
-        //既に開いているモーダルウィンドウをキャンセルする
         $modalStack.dismissAll('canceled');
 
-        var templateUrl = $scope.PLUGIN_EDIT_URL +
-                              'view/' + $scope.frameId + '.json';
-        var controller = 'Announcements.edit';
+        $http.get($scope.PLUGIN_EDIT_URL + 'view_latest/' +
+                   $scope.frameId + '/' + Math.random() + '.json')
+            .success(function(data) {
+              //最新データセット
+              $scope.announcement = data.announcement;
+              $scope.comments.current = data.comments.current;
+              $scope.comments.hasPrev = data.comments.hasPrev;
+              $scope.comments.hasNext = data.comments.hasNext;
+              $scope.comments.data = data.comments.data;
+              $scope.comments.disabled =
+                                data.comments.data.length === 0 ? true : false;
+              $scope.comments.visibility = false;
 
-        $modal.open({
-          templateUrl: templateUrl,
-          controller: controller,
-          backdrop: 'static',
-          scope: $scope,
-          rootScope: $scope
-        }).result.then(
-            function(result) {},
-            function(reason) {
-              if (typeof reason.data === 'object') {
-                //openによるエラー
-                $scope.flash.danger(reason.data.name);
-              } else if (reason === 'canceled') {
-                //キャンセル
-                $scope.flash.close();
-              }
-            }
-        ).finally(function() {
-          $scope.isOpenedEdit = true;
-        });
+              //ダイアログ表示
+              $modal.open({
+                templateUrl: $scope.PLUGIN_EDIT_URL +
+                                'view/' + $scope.frameId + '.json',
+                controller: 'Announcements.edit',
+                backdrop: 'static',
+                scope: $scope
+              }).result.then(
+                  function(result) {},
+                  function(reason) {
+                    if (typeof reason.data === 'object') {
+                      //openによるエラー
+                      $scope.flash.danger(reason.data.name);
+                    } else if (reason === 'canceled') {
+                      //キャンセル
+                      $scope.flash.close();
+                    }
+                  }
+                );
+            })
+            .error(function(data) {
+              $scope.flash.danger(data.name);
+            });
       };
 
       /**
@@ -141,13 +118,6 @@ NetCommonsApp.controller('Announcements',
  */
 NetCommonsApp.controller('Announcements.edit',
                          function($scope, $http, $modalStack) {
-
-      /**
-       * comments
-       *
-       * @type {Object.<string>}
-       */
-      //$scope.comments = {};
 
       /**
        * placeholders
@@ -197,9 +167,6 @@ NetCommonsApp.controller('Announcements.edit',
             unlocked: ''
           }
         };
-
-        $scope.getComments(1);
-        $scope.comments.visibility = false;
       };
 
       /**
@@ -258,7 +225,8 @@ NetCommonsApp.controller('Announcements.edit',
        * @return {void}
        */
       $scope.sendPost = function(postParams) {
-        $http.post($scope.PLUGIN_EDIT_URL + 'edit/' + Math.random() + '.json',
+        $http.post($scope.PLUGIN_EDIT_URL + 'edit/' +
+                $scope.frameId + '/' + Math.random() + '.json',
             $.param(postParams),
             {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
           .success(function(data) {

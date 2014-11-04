@@ -39,9 +39,7 @@
 	</div>
 
 	<hr />
-	<ul class="pager" ng-init="comments.current = <?php echo $this->Paginator->current(); ?>;
-								comments.hasPrev = <?php echo ($this->Paginator->hasPrev() ? 'true' : 'false'); ?>;
-								comments.hasNext = <?php echo ($this->Paginator->hasNext() ? 'true' : 'false'); ?>;">
+	<ul class="pager">
 		<li class="previous" ng-class="comments.hasPrev ? '' : 'disabled'">
 			<a href="#" onclick="return false;" ng-click="prevComments()">
 				<?php echo __d('net_commons', 'Prev.'); ?>
