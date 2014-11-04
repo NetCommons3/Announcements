@@ -50,9 +50,8 @@ class AnnouncementEditController extends AnnouncementsAppController {
 		parent::beforeFilter();
 		$this->Auth->allow();
 
-		$frameId = (int)$this->params['pass'][0];
-
 		//Frameのデータをviewにセット
+		$frameId = (int)$this->params['pass'][0];
 		if (! $this->NetCommonsFrame->setView($this, $frameId)) {
 			throw new ForbiddenException();
 		}
