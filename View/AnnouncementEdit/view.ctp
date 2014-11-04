@@ -17,7 +17,7 @@
 		<div id="nc-announcements-edit-<?php echo $frameId; ?>"
 				class="tab-pane active">
 			<?php echo $this->Form->create('Announcement' . (int)$frameId,
-											array('ng-init' => 'initialize()')); ?>
+											array('type' => 'get', 'ng-init' => 'initialize()')); ?>
 
 				<div class="panel panel-default">
 					<div class="panel-heading">
