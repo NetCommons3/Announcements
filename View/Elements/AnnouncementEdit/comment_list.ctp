@@ -26,8 +26,7 @@
 			{{comment.Announcement.created}}
 		</div>
 		<div class="col-sm-8">
-			<a href="#" onclick="$(this).popover('show'); return false;"
-				title=""
+			<a href="#" onclick="$(this).popover('show'); return false;" tabindex="1"
 				data-toggle="popover"
 				data-trigger="focus"
 				data-placement="top"

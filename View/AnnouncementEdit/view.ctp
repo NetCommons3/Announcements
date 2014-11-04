@@ -37,7 +37,7 @@
 						<?php
 							echo $this->Form->input('Announcement.comment', array(
 										'label' => __d('net_commons', 'Comment'),
-										'rows' => '1',
+										'rows' => '2',
 										'type' => 'textarea',
 										'class' => 'form-control',
 										'ng-model' => 'edit.data.Announcement.comment',
