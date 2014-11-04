@@ -26,7 +26,14 @@ class Announcement extends AnnouncementsAppModel {
  *
  * @var int
  */
-	const COMMENT_LENGTH = 50;
+	const COMMENT_LENGTH = 34;
+
+/**
+ * comment text length
+ *
+ * @var int
+ */
+	const NICKNAME_LENGTH = 15;
 
 /**
  * Validation rules
@@ -89,12 +96,22 @@ class Announcement extends AnnouncementsAppModel {
  */
 	public $belongsTo = array(
 		'Block' => array(
-			'className' => 'Block',
+			'className' => 'Blocks.Block',
 			'foreignKey' => 'block_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		),
+		'CreatedUser' => array(
+			'className' => 'Users.UserAttributesUser',
+			'foreignKey' => false,
+			'conditions' => array(
+				'Announcement.created_user = CreatedUser.user_id',
+				'CreatedUser.key' => 'nickname'
+			),
+			'fields' => array('CreatedUser.key', 'CreatedUser.value'),
+			'order' => ''
+		)
 	);
 
 /**

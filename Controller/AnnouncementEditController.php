@@ -132,6 +132,13 @@ class AnnouncementEditController extends AnnouncementsAppController {
 				),
 				'limit' => 5,
 				'order' => 'Announcement.id DESC',
+			),
+			'CreatedUser' => array(
+				'conditions' => array(
+					'Announcement.created_user = CreatedUser.user_id',
+					'CreatedUser.language_id' => $this->viewVars['languageId'],
+					'CreatedUser.key' => 'nickname'
+				)
 			)
 		);
 		$comments = $this->Paginator->paginate('Announcement');
