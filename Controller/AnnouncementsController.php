@@ -84,8 +84,11 @@ class AnnouncementsController extends AnnouncementsAppController {
 			);
 
 		//Announcementデータをviewにセット
-		$this->set('announcement', $announcement);
-
-		return $this->render('Announcements/view');
+		if (! $announcement) {
+			return $this->render(false);
+		} else {
+			$this->set('announcement', $announcement);
+			return $this->render('Announcements/view');
+		}
 	}
 }
