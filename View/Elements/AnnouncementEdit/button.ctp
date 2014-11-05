@@ -10,7 +10,6 @@
  */
 ?>
 
-<br />
 <div class="text-center">
 	<button type="button" class="btn btn-default" ng-click="cancel()" ng-disabled="sending">
 		<span class="glyphicon glyphicon-remove"></span>

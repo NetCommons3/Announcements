@@ -53,17 +53,17 @@ class AnnouncementEditController extends AnnouncementsAppController {
 		//Frameのデータをviewにセット
 		$frameId = (int)$this->params['pass'][0];
 		if (! $this->NetCommonsFrame->setView($this, $frameId)) {
-			throw new ForbiddenException();
+			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
 		}
 
 		//Roleのデータをviewにセット
 		if (! $this->NetCommonsRoomRole->setView($this)) {
-			throw new ForbiddenException();
+			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
 		}
 
 		//編集権限チェック
 		if (! $this->viewVars['contentEditable']) {
-			throw new ForbiddenException();
+			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
 		}
 	}
 
@@ -169,17 +169,39 @@ class AnnouncementEditController extends AnnouncementsAppController {
  * @throws ForbiddenException
  */
 	public function edit($frameId = 0) {
+		//POSTチェック
 		if (! $this->request->isPost()) {
-			throw new MethodNotAllowedException();
+			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
 		}
 
+		//入力チェック
+		$this->Announcement->set($this->request->data);
+		$validateFileds = array(
+			'fieldList' => array('content', 'comment')
+		);
+		if (! $this->Announcement->validates($validateFileds)) {
+			$this->response->statusCode(403);
+			$errors = $this->Announcement->invalidFields();
+			foreach ($errors as $key => $values) {
+				$errors[$key] = array_unique($errors[$key]);
+			}
+			$result = array(
+				'name' => __d('net_commons', 'Validation errors'),
+				'errors' => $errors
+			);
+			$this->set(compact('result'));
+			$this->set('_serialize', 'result');
+			return $this->render(false);
+		}
+
+		//常に新規で登録のため、idを削除
 		$postData = $this->data;
 		unset($postData['Announcement']['id']);
 
 		//登録
 		$result = $this->Announcement->saveAnnouncement($postData);
 		if (! $result) {
-			throw new ForbiddenException(__d('net_commons', 'Failed to register data.'));
+			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
 		}
 
 		//最新データ取得

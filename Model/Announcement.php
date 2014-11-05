@@ -40,52 +40,7 @@ class Announcement extends AnnouncementsAppModel {
  *
  * @var array
  */
-	public $validate = array(
-		'block_id' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				'message' => 'Invalid request.',
-				'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'key' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				'message' => 'Invalid request.',
-				//'allowEmpty' => false,
-				//'required' => false,
-				'last' => true, // Stop validation after this rule
-				'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'status' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				'message' => 'Invalid request.',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-			'range' => array(
-				'rule' => array('range', 0, 5),
-				'message' => 'Invalid request.',
-			),
-		),
-		'is_auto_translated' => array(
-			'boolean' => array(
-				'rule' => array('boolean'),
-				'message' => 'Invalid request.',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-	);
+	public $validate = array();
 
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
 
@@ -113,6 +68,71 @@ class Announcement extends AnnouncementsAppModel {
 			'order' => ''
 		)
 	);
+
+/**
+ * Called during validation operations, before validation. Please note that custom
+ * validation rules can be defined in $validate.
+ *
+ * @param array $options Options passed from Model::save().
+ * @return bool True if validate operation should continue, false to abort
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforevalidate
+ * @see Model::save()
+ */
+	public function beforeValidate($options = array()) {
+		$this->validate = array(
+			'block_id' => array(
+				'numeric' => array(
+					'rule' => array('numeric'),
+					'message' => __d('net_commons', 'Invalid request.'),
+					'allowEmpty' => false,
+					'required' => true,
+				)
+			),
+			'key' => array(
+				'notEmpty' => array(
+					'rule' => array('notEmpty'),
+					'message' => __d('net_commons', 'Invalid request.'),
+					'required' => true,
+				)
+			),
+			'status' => array(
+				'numeric' => array(
+					'rule' => array('numeric'),
+					'message' => __d('net_commons', 'Invalid request.'),
+					'allowEmpty' => false,
+					'required' => true,
+				),
+				'range' => array(
+					'rule' => array('range', 0, 5),
+					'message' => __d('net_commons', 'Invalid request.'),
+				)
+			),
+			'is_auto_translated' => array(
+				'boolean' => array(
+					'rule' => array('boolean'),
+					'message' => __d('net_commons', 'Invalid request.'),
+				)
+			),
+			'content' => array(
+				'notEmpty' => array(
+					'rule' => array('notEmpty'),
+					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('announcements', 'Content')),
+				)
+			),
+		);
+
+		//ステータス 差し戻しのみコメント必須
+		if ($this->data['Announcement']['status'] === NetCommonsBlockComponent::STATUS_DISAPPROVED) {
+			$this->validate['comment'] = array(
+				'notEmpty' => array(
+					'rule' => array('notEmpty'),
+					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('net_commons', 'Comment')),
+				),
+			);
+		}
+
+		return parent::beforeValidate($options);
+	}
 
 /**
  * get content data
@@ -150,80 +170,39 @@ class Announcement extends AnnouncementsAppModel {
  *
  * @param array $postData received post data
  * @return bool true success, false error
- * @throws ForbiddenException
+ * @throws InternalErrorException
  */
 	public function saveAnnouncement($postData) {
-		$models = array(
-			'Frame' => 'Frames.Frame',
-			'Block' => 'Blocks.Block',
-		);
-		foreach ($models as $model => $class) {
-			$this->$model = ClassRegistry::init($class);
-			$this->$model->setDataSource('master');
-		}
-
-		//frame関連のセット
-		$frame = $this->Frame->findById($postData['Frame']['id']);
-		if (! $frame) {
-			return false;
-		}
-		if (! isset($frame['Frame']['block_id']) ||
-				$frame['Frame']['block_id'] === '0') {
-			//announcementsテーブルのkey生成
-			$postData['Announcement']['key'] = hash('sha256', 'announcement_' . microtime());
-		}
-
 		//DBへの登録
 		$dataSource = $this->getDataSource();
 		$dataSource->begin();
 		try {
-			$blockId = $this->__saveBlock($frame);
+			$block = $this->Block->saveByFrameId($postData['Frame']['id']);
+			if (! $block) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
 
-			//announcementsテーブル登録
+			$count = $this->find('count', array(
+				'conditions' => array('block_id' => (int)$block['Block']['id'])
+			));
+			if ($count === 0) {
+				//announcementsテーブルのkey生成
+				$postData['Announcement']['key'] = hash('sha256', 'announcement_' . microtime());
+			}
 			$announcement['Announcement'] = $postData['Announcement'];
-			$announcement['Announcement']['block_id'] = $blockId;
+			$announcement['Announcement']['block_id'] = (int)$block['Block']['id'];
 			$announcement['Announcement']['created_user'] = CakeSession::read('Auth.User.id');
 			$announcement = $this->save($announcement);
 			if (! $announcement) {
-				throw new ForbiddenException(serialize($this->validationErrors));
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			$dataSource->commit();
 			return $announcement;
 
 		} catch (Exception $ex) {
-			CakeLog::error($ex->getTraceAsString());
+			//CakeLog::error($ex->getTraceAsString());
 			$dataSource->rollback();
 			return false;
 		}
-	}
-
-/**
- * save block
- *
- * @param array $frame frame data
- * @return int blocks.id
- * @throws ForbiddenException
- */
-	private function __saveBlock($frame) {
-		if (! isset($frame['Frame']['block_id']) ||
-				$frame['Frame']['block_id'] === '0') {
-			//blocksテーブル登録
-			$block = array();
-			$block['Block']['room_id'] = $frame['Frame']['room_id'];
-			$block['Block']['language_id'] = $frame['Frame']['language_id'];
-			$block = $this->Block->save($block);
-			if (! $block) {
-				throw new ForbiddenException(serialize($this->Block->validationErrors));
-			}
-			$blockId = (int)$block['Block']['id'];
-
-			//framesテーブル更新
-			$frame['Frame']['block_id'] = $blockId;
-			if (! $this->Frame->save($frame)) {
-				throw new ForbiddenException(serialize($this->Frame->validationErrors));
-			}
-		}
-
-		return (int)$frame['Frame']['block_id'];
 	}
 }

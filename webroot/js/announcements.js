@@ -120,6 +120,13 @@ NetCommonsApp.controller('Announcements.edit',
                          function($scope, $http, $modalStack) {
 
       /**
+       * errors
+       *
+       * @type {bool}
+       */
+      $scope.errors = {};
+
+      /**
        * placeholders
        *
        * @type {Object.<string>}
@@ -236,7 +243,11 @@ NetCommonsApp.controller('Announcements.edit',
               $modalStack.dismissAll('saved');
             })
           .error(function(data) {
-              $scope.flash.danger(data.name);
+              if (typeof data.errors === 'object') {
+                $scope.errors = data.errors;
+              } else {
+                $scope.flash.danger(data.name);
+              }
               $scope.sending = false;
             });
       };
