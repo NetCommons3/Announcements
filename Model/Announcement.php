@@ -182,6 +182,7 @@ class Announcement extends AnnouncementsAppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
+
 			$count = $this->find('count', array(
 				'conditions' => array('block_id' => (int)$block['Block']['id'])
 			));
@@ -189,6 +190,9 @@ class Announcement extends AnnouncementsAppModel {
 				//announcementsテーブルのkey生成
 				$postData['Announcement']['key'] = hash('sha256', 'announcement_' . microtime());
 			}
+
+			unset($postData['Announcement']['id']);
+			$announcement = $this->create();
 			$announcement['Announcement'] = $postData['Announcement'];
 			$announcement['Announcement']['block_id'] = (int)$block['Block']['id'];
 			$announcement['Announcement']['created_user'] = CakeSession::read('Auth.User.id');

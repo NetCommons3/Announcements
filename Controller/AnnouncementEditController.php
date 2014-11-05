@@ -194,12 +194,8 @@ class AnnouncementEditController extends AnnouncementsAppController {
 			return $this->render(false);
 		}
 
-		//常に新規で登録のため、idを削除
-		$postData = $this->data;
-		unset($postData['Announcement']['id']);
-
 		//登録
-		$result = $this->Announcement->saveAnnouncement($postData);
+		$result = $this->Announcement->saveAnnouncement($this->data);
 		if (! $result) {
 			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
 		}
