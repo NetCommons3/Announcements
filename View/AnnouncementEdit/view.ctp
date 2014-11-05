@@ -22,17 +22,13 @@
 				<div class="panel panel-default">
 					<div class="panel-body has-feedback" ng-class="errors.content ? 'has-error' : ''">
 						<div class="form-group">
-							<?php
-								echo $this->Form->input('Announcement.comment', array(
-											'label' => __d('net_commons', 'Content'),
-											'rows' => '3',
-											'type' => 'textarea',
-											'class' => 'form-control',
-											'ng-model' => 'edit.data.Announcement.content',
-											'ui-tinymce' => "tinymceOptions",
-										)
-									);
-							?>
+							<label>
+								<?php echo __d('net_commons', 'Content'); ?>
+							</label>
+							<textarea class="form-control" rows="3"
+									ui-tinymce="tinymceOptions"
+									ng-model="edit.data.Announcement.content">
+							</textarea>
 						</div>
 
 						<div class="help-block">
