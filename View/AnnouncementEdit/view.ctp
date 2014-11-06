@@ -32,19 +32,15 @@
 						</div>
 
 						<div class="help-block">
-							<br ng-hide="errors.content"/>
 							<div ng-repeat="error in errors.content">
 								{{error}}
 							</div>
 						</div>
 					</div>
-				</div>
-
-				<div class="panel panel-default">
 					<div class="panel-body">
 						<?php
 							echo $this->Form->input('Announcement.comment', array(
-										'label' => __d('net_commons', 'Comment'),
+										//'label' => __d('net_commons', 'Comment'),
 										'rows' => '2',
 										'type' => 'textarea',
 										'class' => 'form-control',
@@ -66,7 +62,9 @@
 
 						<?php echo $this->element('AnnouncementEdit/button'); ?>
 					</div>
+				</div>
 
+				<div class="panel panel-default" ng-show="comments.visibility">
 					<?php echo $this->element('AnnouncementEdit/comment_list'); ?>
 				</div>
 

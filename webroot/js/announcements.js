@@ -70,7 +70,8 @@ NetCommonsApp.controller('Announcements',
               $scope.comments.data = data.comments.data;
               $scope.comments.disabled =
                                 data.comments.data.length === 0 ? true : false;
-              $scope.comments.visibility = false;
+              $scope.comments.visibility =
+                                data.comments.data.length === 0 ? false : true;
 
               //ダイアログ表示
               $modal.open({
@@ -253,15 +254,6 @@ NetCommonsApp.controller('Announcements.edit',
       };
 
       /**
-       * Comment list of visibility
-       *
-       * @return {void}
-       */
-      $scope.displayComments = function() {
-        $scope.comments.visibility = ! $scope.comments.visibility;
-      };
-
-      /**
        * Comment list of prev page
        *
        * @return {void}
@@ -298,11 +290,6 @@ NetCommonsApp.controller('Announcements.edit',
               $scope.comments.hasPrev = data.comments.hasPrev;
               $scope.comments.hasNext = data.comments.hasNext;
               $scope.comments.data = data.comments.data;
-              $scope.comments.disabled =
-                                data.comments.data.length === 0 ? true : false;
-              if ($scope.comments.disabled) {
-                $scope.comments.visibility = false;
-              }
             })
             .error(function(data) {
               //keyの取得に失敗

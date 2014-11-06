@@ -92,8 +92,10 @@ class AnnouncementEditController extends AnnouncementsAppController {
 			);
 
 		$this->set('announcement', $announcement);
-
 		if ($this->params['action'] === 'view' || $this->params['action'] === 'index') {
+			//HTMLで出力
+			$this->viewClass = 'View';
+			$this->response->type('html');
 			return $this->render('AnnouncementEdit/view', false);
 		}
 	}
@@ -157,6 +159,10 @@ class AnnouncementEditController extends AnnouncementsAppController {
  */
 	public function form($frameId = 0) {
 		$this->view($frameId);
+
+		//HTMLで出力
+		$this->viewClass = 'View';
+		$this->response->type('html');
 		return $this->render('AnnouncementEdit/form', false);
 	}
 

@@ -10,16 +10,11 @@
  */
 ?>
 
-<div class="panel-footer">
-	<button type="button" class="btn btn-default btn-block"
-			ng-disabled="comments.disabled"
-			ng-click="displayComments()">
-		<?php echo __d('net_commons', 'Comment list'); ?>
-	</button>
+<div class="panel-heading">
+	<?php echo __d('net_commons', 'Comment list'); ?>
 </div>
 
-<div class="panel-body"
-		ng-show="comments.visibility">
+<div class="panel-body">
 	<div class="row" ng-repeat="comment in comments.data">
 		<div class="col-sm-12" ng-hide="$first"><hr /></div>
 		<div class="col-sm-4">
