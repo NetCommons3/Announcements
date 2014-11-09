@@ -1,6 +1,6 @@
 <?php
 /**
- * announcement edit view template
+ * announcement button element template
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -10,7 +10,7 @@
  */
 ?>
 
-<div class="text-center">
+<div class="panel-footer text-center">
 	<button type="button" class="btn btn-default" ng-click="cancel()" ng-disabled="sending">
 		<span class="glyphicon glyphicon-remove"></span>
 		<?php echo __d('net_commons', 'Cancel'); ?>
@@ -50,5 +50,10 @@
 		</button>
 
 	<?php endif; ?>
+
+		<button type="button" class="btn btn-primary" ng-disabled="sending"
+				ng-click="save('<?php echo NetCommonsBlockComponent::STATUS_APPROVED ?>')">
+			<?php echo __d('net_commons', 'OK'); ?>
+		</button>
 
 </div>

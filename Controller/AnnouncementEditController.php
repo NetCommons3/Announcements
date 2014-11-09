@@ -53,17 +53,17 @@ class AnnouncementEditController extends AnnouncementsAppController {
 		//Frameのデータをviewにセット
 		$frameId = (int)$this->params['pass'][0];
 		if (! $this->NetCommonsFrame->setView($this, $frameId)) {
-			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
+			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
 		}
 
 		//Roleのデータをviewにセット
 		if (! $this->NetCommonsRoomRole->setView($this)) {
-			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
+			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
 		}
 
 		//編集権限チェック
 		if (! $this->viewVars['contentEditable']) {
-			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
+			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
 		}
 	}
 
@@ -127,6 +127,14 @@ class AnnouncementEditController extends AnnouncementsAppController {
 		$this->Announcement->unbindModel(array('belongsTo' => array('Block')), false);
 		$this->Paginator->settings = array(
 			'Announcement' => array(
+				'fields' => array(
+					'Announcement.id',
+					'Announcement.comment',
+					'Announcement.created_user',
+					'Announcement.created',
+					'CreatedUser.key',
+					'CreatedUser.value',
+				),
 				'conditions' => array(
 					'Announcement.block_id' => $this->viewVars['blockId'],
 					'Announcement.comment !=' => '',
@@ -171,13 +179,12 @@ class AnnouncementEditController extends AnnouncementsAppController {
  *
  * @param int $frameId frames.id
  * @return string JSON that indicates success
- * @throws MethodNotAllowedException
  * @throws ForbiddenException
  */
 	public function edit($frameId = 0) {
 		//POSTチェック
 		if (! $this->request->isPost()) {
-			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
+			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
 		}
 
 		//入力チェック
@@ -188,7 +195,8 @@ class AnnouncementEditController extends AnnouncementsAppController {
 		if (! $this->Announcement->validates($validateFileds)) {
 			$this->response->statusCode(403);
 			$errors = $this->Announcement->invalidFields();
-			foreach ($errors as $key => $values) {
+			$keys = array_keys($errors);
+			foreach ($keys as $key) {
 				$errors[$key] = array_unique($errors[$key]);
 			}
 			$result = array(
@@ -203,7 +211,7 @@ class AnnouncementEditController extends AnnouncementsAppController {
 		//登録
 		$result = $this->Announcement->saveAnnouncement($this->data);
 		if (! $result) {
-			throw new ForbiddenException(__d('net_commons', 'Security Error!  Unauthorized input.'));
+			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
 		}
 
 		//最新データ取得

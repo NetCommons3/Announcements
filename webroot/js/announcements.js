@@ -8,10 +8,10 @@
  * Announcements Javascript
  *
  * @param {string} Controller name
- * @param {function($scope, $http, $sce, $modal, $modalStack)} Controller
+ * @param {function($scope, $http, $sce, $modalStack)} Controller
  */
 NetCommonsApp.controller('Announcements',
-                         function($scope, $http, $sce, $modal, $modalStack) {
+                         function($scope, $http, $sce, $modalStack) {
 
       /**
        * Announcements plugin view url
@@ -60,7 +60,7 @@ NetCommonsApp.controller('Announcements',
         $modalStack.dismissAll('canceled');
 
         $http.get($scope.PLUGIN_EDIT_URL + 'view_latest/' +
-                   $scope.frameId + '/' + Math.random() + '.json')
+                  $scope.frameId + '/' + Math.random() + '.json')
             .success(function(data) {
               //最新データセット
               $scope.announcement = data.announcement;
@@ -69,29 +69,13 @@ NetCommonsApp.controller('Announcements',
               $scope.comments.hasNext = data.comments.hasNext;
               $scope.comments.data = data.comments.data;
               $scope.comments.disabled =
-                                data.comments.data.length === 0 ? true : false;
+                              data.comments.data.length === 0 ? true : false;
               $scope.comments.visibility =
-                                data.comments.data.length === 0 ? false : true;
+                              data.comments.data.length === 0 ? false : true;
 
-              //ダイアログ表示
-              $modal.open({
-                templateUrl: $scope.PLUGIN_EDIT_URL +
-                                'view/' + $scope.frameId + '.json',
-                controller: 'Announcements.edit',
-                backdrop: 'static',
-                scope: $scope
-              }).result.then(
-                  function(result) {},
-                  function(reason) {
-                    if (typeof reason.data === 'object') {
-                      //openによるエラー
-                      $scope.flash.danger(reason.data.name);
-                    } else if (reason === 'canceled') {
-                      //キャンセル
-                      $scope.flash.close();
-                    }
-                  }
-                );
+              var templateUrl = $scope.PLUGIN_EDIT_URL +
+                              'view/' + $scope.frameId + '.json';
+              $scope.showDialog($scope, templateUrl, 'Announcements.edit');
             })
             .error(function(data) {
               $scope.flash.danger(data.name);
@@ -119,7 +103,6 @@ NetCommonsApp.controller('Announcements',
  */
 NetCommonsApp.controller('Announcements.edit',
                          function($scope, $http, $modalStack) {
-
       /**
        * errors
        *
@@ -240,7 +223,6 @@ NetCommonsApp.controller('Announcements.edit',
           .success(function(data) {
               angular.copy(data.announcement, $scope.announcement);
               $scope.flash.success(data.name);
-              $scope.sending = false;
               $modalStack.dismissAll('saved');
             })
           .error(function(data) {
@@ -249,6 +231,8 @@ NetCommonsApp.controller('Announcements.edit',
               } else {
                 $scope.flash.danger(data.name);
               }
+            })
+          .finally (function() {
               $scope.sending = false;
             });
       };
@@ -284,7 +268,7 @@ NetCommonsApp.controller('Announcements.edit',
        */
       $scope.getComments = function(page) {
         $http.get($scope.PLUGIN_EDIT_URL + 'comment/' +
-                   $scope.frameId + '/page:' + page + '.json')
+                  $scope.frameId + '/page:' + page + '.json')
             .success(function(data) {
               $scope.comments.current = data.comments.current;
               $scope.comments.hasPrev = data.comments.hasPrev;
@@ -295,20 +279,5 @@ NetCommonsApp.controller('Announcements.edit',
               //keyの取得に失敗
               $scope.flash.danger(data.name);
             });
-      };
-
-      /**
-       * Comment list of visibility
-       *
-       * @return {void}
-       */
-      $scope.setPlaceholder = function(key, value) {
-        if (key === 'comment') {
-          var status = $scope.announcement.Announcement.status;
-          $scope.placeholders[key] =
-                          (status === $scope.STATUS_APPROVED ? value : '');
-        } else {
-          $scope.placeholders[key] = value;
-        }
       };
     });

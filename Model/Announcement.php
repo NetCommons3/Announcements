@@ -117,6 +117,7 @@ class Announcement extends AnnouncementsAppModel {
 				'notEmpty' => array(
 					'rule' => array('notEmpty'),
 					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('announcements', 'Content')),
+					'required' => true,
 				)
 			),
 		);
@@ -127,6 +128,7 @@ class Announcement extends AnnouncementsAppModel {
 				'notEmpty' => array(
 					'rule' => array('notEmpty'),
 					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('net_commons', 'Comment')),
+					'required' => true,
 				),
 			);
 		}
@@ -182,7 +184,6 @@ class Announcement extends AnnouncementsAppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
-
 			$count = $this->find('count', array(
 				'conditions' => array('block_id' => (int)$block['Block']['id'])
 			));
@@ -204,7 +205,6 @@ class Announcement extends AnnouncementsAppModel {
 			return $announcement;
 
 		} catch (Exception $ex) {
-			//CakeLog::error($ex->getTraceAsString());
 			$dataSource->rollback();
 			return false;
 		}
