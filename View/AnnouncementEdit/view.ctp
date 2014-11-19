@@ -33,7 +33,7 @@ $formName = 'AnnouncementForm' . (int)$frameId;
 			</a>
 		</li>
 		<li>
-			<a href="" role="tab" data-toggle="tab" ng-click="showManage()">
+			<a href="" role="tab" data-toggle="tab" ng-click="showSetting()">
 				<?php echo __d('announcements', 'Announcement edit'); ?>
 			</a>
 		</li>
@@ -62,6 +62,11 @@ $formName = 'AnnouncementForm' . (int)$frameId;
 				</div>
 
 				<div class="panel panel-default" ng-show="comments.visibility">
+					<?php
+						//var_dump('/comments/comments/index/announcements/' . $announcement['Announcement']['key']);
+						//$view = $this->requestAction('/comments/comments/index/announcements/' . $announcement['Announcement']['key'], array('return'));
+						//var_dump($view);
+					?>
 					<?php echo $this->element('AnnouncementEdit/comment_list'); ?>
 				</div>
 

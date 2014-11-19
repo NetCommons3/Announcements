@@ -30,7 +30,7 @@
 
 			<button class="btn btn-primary"
 					tooltip="<?php echo __d('net_commons', 'Manage'); ?>"
-					ng-click="showManage()">
+					ng-click="showSetting()">
 
 				<span class="glyphicon glyphicon-cog"> </span>
 			</button>

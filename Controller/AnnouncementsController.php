@@ -63,20 +63,21 @@ class AnnouncementsController extends AnnouncementsAppController {
 /**
  * index method
  *
- * @param int $frameId frames.id
  * @return CakeResponse A response object containing the rendered view.
  */
-	public function index($frameId = 0) {
-		return $this->view($frameId);
+	public function index() {
+		$this->view();
+		if ($this->viewVars['announcement']) {
+			$this->render('Announcements/view');
+		}
 	}
 
 /**
  * view method
  *
- * @param int $frameId frames.id
  * @return CakeResponse A response object containing the rendered view.
  */
-	public function view($frameId = 0) {
+	public function view() {
 		//Announcementデータを取得
 		$announcement = $this->Announcement->getAnnouncement(
 				$this->viewVars['blockId'],
@@ -84,11 +85,25 @@ class AnnouncementsController extends AnnouncementsAppController {
 			);
 
 		//Announcementデータをviewにセット
+		$this->set('announcement', $announcement);
 		if (! $announcement) {
-			return $this->render(false);
+			$this->render(false);
 		} else {
-			$this->set('announcement', $announcement);
-			return $this->render('Announcements/view');
+			$this->render('Announcements/view');
 		}
+		
 	}
+
+/**
+ * edit method
+ *
+ * @return CakeResponse A response object containing the rendered view.
+ * @throws ForbiddenException
+ */
+	public function edit() {
+
+
+
+	}
+
 }

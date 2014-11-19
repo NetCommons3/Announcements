@@ -56,11 +56,11 @@ NetCommonsApp.controller('Announcements',
        *
        * @return {void}
        */
-      $scope.showManage = function() {
+      $scope.showSetting = function() {
         $modalStack.dismissAll('canceled');
 
         $http.get($scope.PLUGIN_EDIT_URL + 'view_latest/' +
-                  $scope.frameId + '/' + Math.random() + '.json')
+                  $scope.frameId + '.json', {cache: false})
             .success(function(data) {
               //最新データセット
               $scope.announcement = data.announcement;
@@ -77,7 +77,7 @@ NetCommonsApp.controller('Announcements',
                               'view/' + $scope.frameId + '.json';
               $scope.showDialog($scope, templateUrl, 'Announcements.edit');
             })
-            .error(function(data) {
+            .error(function(data, status) {
               $scope.flash.danger(data.name);
             });
       };
@@ -202,7 +202,7 @@ NetCommonsApp.controller('Announcements.edit',
 
         $scope.sending = true;
         $http.get($scope.PLUGIN_EDIT_URL + 'form/' +
-                  $scope.frameId + '/' + Math.random() + '.json')
+                  $scope.frameId + '.json')
             .success(function(data) {
 console.log(data);
 //              //フォームエレメント生成

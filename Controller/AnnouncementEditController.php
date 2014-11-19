@@ -58,6 +58,7 @@ class AnnouncementEditController extends AnnouncementsAppController {
 
 		//Frameのデータをviewにセット
 		$frameId = (int)$this->params['pass'][0];
+		//$frameId = 0;
 		if (! $this->NetCommonsFrame->setView($this, $frameId)) {
 			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
 		}
@@ -116,7 +117,10 @@ class AnnouncementEditController extends AnnouncementsAppController {
 	public function view_latest($frameId = 0) {
 		//最新データ取得
 		$this->view($frameId);
-		$this->comments($frameId, Comment::STARTLIMIT);
+		//$this->comments($frameId, Comment::STARTLIMIT);
+
+		$view = $this->requestAction('/comments/comments/index/announcements/' . $this->viewVars['announcement']['Announcement']['key'] . '.json', array('return'));
+		var_dump($view);
 
 		return $this->render('AnnouncementEdit/view_latest', false);
 	}
