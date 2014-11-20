@@ -11,6 +11,7 @@
 
 App::uses('AnnouncementsAppController', 'Announcements.Controller');
 App::uses('Comment', 'Blocks.Model'); //当定義がないと、エラーになる
+//App::uses('CommentsController', 'Comments.Controller');
 
 /**
  * Announcement edit Controller
@@ -117,10 +118,25 @@ class AnnouncementEditController extends AnnouncementsAppController {
 	public function view_latest($frameId = 0) {
 		//最新データ取得
 		$this->view($frameId);
-		//$this->comments($frameId, Comment::STARTLIMIT);
+		$this->comments($frameId, Comment::STARTLIMIT);
 
-		$view = $this->requestAction('/comments/comments/index/announcements/' . $this->viewVars['announcement']['Announcement']['key'] . '.json', array('return'));
-		var_dump($view);
+		$content_key = $this->viewVars['announcement']['Announcement']['key'];
+		$view = $this->requestAction(
+				'/comments/comments/index/announcements/' . $content_key . '.json', array('return'));
+
+//		$commentsController = new CommentsController;
+//		$commentsController->constructClasses();
+//		$view = $commentsController->index('announcements', $this->viewVars['announcement']['Announcement']['key']);
+
+		CakeLog::debug($view);
+		CakeLog::debug(gettype($view));
+//		CakeLog::debug(print_r($view, true));
+//		CakeLog::debug((is_string($view) ? 'true' : 'false'));
+
+		$aaa = json_decode($view, true);
+//		var_dump($aaa);
+
+		CakeLog::debug(print_r($aaa, true));
 
 		return $this->render('AnnouncementEdit/view_latest', false);
 	}
@@ -134,6 +150,9 @@ class AnnouncementEditController extends AnnouncementsAppController {
  * @throws ForbiddenException
  */
 	public function comments($frameId = 0, $limit = 0) {
+
+		CakeLog::debug(print_r($this->params, true));
+
 		if (! isset($this->viewVars['announcement'])) {
 			$this->view($frameId);
 		}
