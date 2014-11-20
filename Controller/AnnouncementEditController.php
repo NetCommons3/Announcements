@@ -44,7 +44,7 @@ class AnnouncementEditController extends AnnouncementsAppController {
 	);
 
 	public $helpers = array(
-		'Announcements.NetCommonsForm'
+		'NetCommons.NetCommonsForm'
 	);
 
 /**
