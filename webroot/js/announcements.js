@@ -19,13 +19,6 @@ NetCommonsApp.controller('Announcements',
        * @const
        */
       $scope.PLUGIN_INDEX_URL = '/announcements/announcements/';
-//
-//      /**
-//       * Announcements edit url
-//       *
-//       * @const
-//       */
-//      $scope.PLUGIN_EDIT_URL = '/announcements/announcement_edit/';
 
       /**
        * Announcement
@@ -33,13 +26,6 @@ NetCommonsApp.controller('Announcements',
        * @type {Object.<string>}
        */
       $scope.announcement = {};
-
-//      /**
-//       * comments
-//       *
-//       * @type {Object.<string>}
-//       */
-//      $scope.comments = {};
 
       /**
        * post object
@@ -172,12 +158,15 @@ NetCommonsApp.controller('Announcements.edit',
        *
        * @return {bool}
        */
-      $scope.validate = function() {
-        var status = $scope.edit.data.Announcement.status;
-        if (status === $scope.STATUS_DISAPPROVED &&
-                $scope.edit.data.Comment.comment === '') {
+      $scope.validate = function(form) {
+        //コメントチェック
+        var editStatus = $scope.edit.data.Announcement.status;
+        var status =  $scope.announcement.Announcement.status;
+        if ($scope.comments.input.hasErrorTarget(status, editStatus) &&
+                $scope.comments.input.invalid(form)) {
           return false;
         }
+        //本文チェック
         if ($scope.edit.data.Announcement.content === '') {
           return false;
         }
@@ -194,9 +183,9 @@ NetCommonsApp.controller('Announcements.edit',
        * - 4: Disapprove
        * @return {void}
        */
-      $scope.save = function(status) {
+      $scope.save = function(form, status) {
         $scope.edit.data.Announcement.status = status;
-        if (! $scope.validate()) {
+        if (! $scope.validate(form)) {
           return;
         }
 
@@ -204,17 +193,6 @@ NetCommonsApp.controller('Announcements.edit',
         $http.get($scope.PLUGIN_INDEX_URL + 'token/' +
                   $scope.frameId + '.json', {cache: false})
             .success(function(data) {
-//console.log(data);
-//              //フォームエレメント生成
-//              var form = $('<div>').html(data);
-//
-//              //セキュリティキーセット
-//              $scope.edit.data._Token.key =
-//                  $(form).find('input[name="data[_Token][key]"]').val();
-//              $scope.edit.data._Token.fields =
-//                  $(form).find('input[name="data[_Token][fields]"]').val();
-//              $scope.edit.data._Token.unlocked =
-//                  $(form).find('input[name="data[_Token][unlocked]"]').val();
               $scope.edit.data._Token = data._Token;
 
               //登録情報をPOST
@@ -251,56 +229,5 @@ NetCommonsApp.controller('Announcements.edit',
               $scope.sending = false;
             });
       };
-
-//      /**
-//       * get comments
-//       *
-//       * @return {void}
-//       */
-//      $scope.getComments = function(page) {
-//        $http.get($scope.PLUGIN_EDIT_URL + 'comments/' +
-//                  $scope.frameId + '/page:' + page + '.json')
-//            .success(function(data) {
-//              $scope.comments.current = data.comments.current;
-//              $scope.comments.hasPrev = data.comments.hasPrev;
-//              $scope.comments.hasNext = data.comments.hasNext;
-//              if (page === 1 &&
-//                      data.comments.limit > $scope.comments.data.length) {
-//                $scope.comments.data = data.comments.data;
-//              } else {
-//                $scope.comments.data =
-//                    $scope.comments.data.concat(data.comments.data);
-//              }
-//            })
-//            .error(function(data) {
-//              //keyの取得に失敗
-//              $scope.flash.danger(data.name);
-//            });
-//      };
-//
-//      /**
-//       * getNgClassComment
-//       *
-//       * @return {string} ngClass of hasFeedback
-//       */
-//      $scope.getNgClassComment = function(form) {
-//        if ($scope.edit.data.Announcement.status ===
-//                                 $scope.announcement.Announcement.status ||
-//            $scope.edit.data.Announcement.status !==
-//                                 $scope.STATUS_DISAPPROVED) {
-//          return '';
-//        }
-//        return (form['comment'].$invalid ? 'has-error' : 'has-success');
-//      };
-//
-//      /**
-//       * gotoTop
-//       *
-//       * @return {string} ngClass of hasFeedback
-//       */
-//      $scope.gotoTop = function() {
-//        $location.hash('nc-modal-top');
-//        $anchorScroll();
-//      };
 
     });

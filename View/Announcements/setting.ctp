@@ -32,7 +32,7 @@ $formName = 'AnnouncementForm' . (int)$frameId;
 
 		<div class="panel panel-default">
 			<div class="panel-body has-feedback">
-				<?php echo $this->element('AnnouncementEdit/edit_form', array('formName' => $formName)); ?>
+				<?php echo $this->element('Announcements/edit_form', array('formName' => $formName)); ?>
 
 				<hr />
 
@@ -51,7 +51,8 @@ $formName = 'AnnouncementForm' . (int)$frameId;
 				<?php echo $this->element('save_button',
 							array(
 								'status' => $announcement['Announcement']['status'],
-								'ngModel' => 'announcement.Announcement.status'
+								'statusModel' => 'announcement.Announcement.status',
+								'formName' => 'AnnouncementForm' . (int)$frameId,
 							),
 							array('plugin' => 'NetCommons')
 						); ?>

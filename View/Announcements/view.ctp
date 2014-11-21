@@ -34,7 +34,9 @@
 		<div ng-bind-html="htmlContent()"></div>
 
 		<p class="text-left">
-			<?php echo $this->element('Announcements/status_label'); ?>
+			<?php echo $this->element('status_label',
+					array('statusModel' => 'announcement.Announcement.status'),
+					array('plugin' => 'NetCommons')); ?>
 		</p>
 	</div>
 
