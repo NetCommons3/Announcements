@@ -33,7 +33,7 @@ $formName = 'AnnouncementForm' . (int)$frameId;
 			</a>
 		</li>
 		<li>
-			<a href="" role="tab" data-toggle="tab" ng-click="showSetting()">
+			<a href="" role="tab" data-toggle="tab">
 				<?php echo __d('announcements', 'Announcement edit'); ?>
 			</a>
 		</li>
@@ -44,7 +44,7 @@ $formName = 'AnnouncementForm' . (int)$frameId;
 
 			<?php echo $this->Form->create('Announcement' . (int)$frameId, array(
 					'type' => 'get',
-					'ng-init' => 'initialize()',
+					//'ng-init' => 'initialize()',
 					'name' => $formName,
 					'novalidate' => true
 				)); ?>

@@ -22,18 +22,13 @@
 						tooltip="<?php echo __d('net_commons', 'Accept'); ?>"
 						ng-controller="Announcements.edit"
 						ng-hide="(announcement.Announcement.status !== '<?php echo NetCommonsBlockComponent::STATUS_APPROVED ?>')"
-						ng-click="initialize(); save('<?php echo NetCommonsBlockComponent::STATUS_PUBLISHED ?>')">
+						ng-click="setEditData(); save('<?php echo NetCommonsBlockComponent::STATUS_PUBLISHED ?>')">
 
 					<span class="glyphicon glyphicon-ok"></span>
 				</button>
 			<?php endif; ?>
 
-			<button class="btn btn-primary"
-					tooltip="<?php echo __d('net_commons', 'Manage'); ?>"
-					ng-click="showSetting()">
-
-				<span class="glyphicon glyphicon-cog"> </span>
-			</button>
+			<?php echo $this->element('setting_button', array(), array('plugin' => 'NetCommons')); ?>
 		</p>
 
 		<div ng-bind-html="htmlContent()"></div>

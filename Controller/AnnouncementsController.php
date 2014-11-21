@@ -20,7 +20,7 @@ App::uses('AnnouncementsAppController', 'Announcements.Controller');
 class AnnouncementsController extends AnnouncementsAppController {
 
 /**
- * use model
+ * use models
  *
  * @var array
  */
@@ -29,14 +29,23 @@ class AnnouncementsController extends AnnouncementsAppController {
 	);
 
 /**
- * use component
+ * use components
  *
  * @var array
  */
 	public $components = array(
-		'NetCommons.NetCommonsBlock', //use Announcement model
+		'NetCommons.NetCommonsBlock', //Use Announcement model
 		'NetCommons.NetCommonsFrame',
 		'NetCommons.NetCommonsRoomRole',
+	);
+
+/**
+ * use helpers
+ *
+ * @var array
+ */
+	public $helpers = array(
+		'NetCommons.NetCommonsForm'
 	);
 
 /**
@@ -63,7 +72,7 @@ class AnnouncementsController extends AnnouncementsAppController {
 /**
  * index method
  *
- * @return CakeResponse A response object containing the rendered view.
+ * @return void
  */
 	public function index() {
 		$this->view();
@@ -75,7 +84,7 @@ class AnnouncementsController extends AnnouncementsAppController {
 /**
  * view method
  *
- * @return CakeResponse A response object containing the rendered view.
+ * @return void
  */
 	public function view() {
 		//Announcementデータを取得
@@ -88,22 +97,82 @@ class AnnouncementsController extends AnnouncementsAppController {
 		$this->set('announcement', $announcement);
 		if (! $announcement) {
 			$this->render(false);
-		} else {
-			$this->render('Announcements/view');
 		}
-		
+	}
+
+/**
+ * setting method
+ *
+ * @return void
+ */
+	public function setting() {
+		//編集権限チェック
+		if (! $this->viewVars['contentEditable']) {
+			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
+		}
+
+		$this->layout = 'NetCommons.modal';
+		$this->view();
+		$this->set('title_for_layout', __d('announcements', 'plugin_name'));
 	}
 
 /**
  * edit method
  *
- * @return CakeResponse A response object containing the rendered view.
- * @throws ForbiddenException
+ * @return void
  */
 	public function edit() {
+		//編集権限チェック
+		if (! $this->viewVars['contentEditable']) {
+			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
+		}
 
+		//POSTチェック
+		if ($this->request->isPost()) {
+			//公開権限チェック
+			if (! isset($this->data['Announcement']['status'])) {
+				throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
+			}
+			if (! $this->viewVars['contentPublishable'] && (
+					$this->data['Announcement']['status'] === NetCommonsBlockComponent::STATUS_PUBLISHED ||
+					$this->data['Announcement']['status'] === NetCommonsBlockComponent::STATUS_DISAPPROVED
+				)) {
+				throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
+			}
+			//登録
+			$result = $this->Announcement->saveAnnouncement($this->data);
+			if (! $result) {
+				throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
+			}
+		}
 
+		//最新データ取得
+		$this->view();
 
+		//コメントデータ取得
+		if ($this->request->isPost()) {
+			$results = array('announcement' => $this->viewVars['announcement']);
+			$this->renderJson($results, __d('net_commons', 'Successfully finished.'));
+		} else {
+			$content_key = $this->viewVars['announcement']['Announcement']['key'];
+			$view = $this->requestAction(
+					'/comments/comments/index/announcements/' . $content_key . '.json', array('return'));
+			$comments = json_decode($view, true);
+			//JSON形式で戻す
+			$results = Hash::merge($comments['results'], array('announcement' => $this->viewVars['announcement']));
+
+			$this->renderJson($results);
+		}
+	}
+
+/**
+ * token method
+ *
+ * @return void
+ */
+	public function token() {
+		$this->view();
+		$this->render('Announcements/token', false);
 	}
 
 }
