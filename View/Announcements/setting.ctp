@@ -10,8 +10,11 @@
  */
 
 $formName = 'AnnouncementForm' . (int)$frameId;
-
 ?>
+
+<?php $this->start('title_for_modal'); ?>
+<?php echo __d('announcements', 'plugin_name'); ?>
+<?php $this->end(); ?>
 
 <?php $this->startIfEmpty('tablist'); ?>
 <ul class="nav nav-tabs" role="tablist">

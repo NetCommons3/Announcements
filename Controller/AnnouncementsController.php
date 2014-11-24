@@ -107,27 +107,23 @@ class AnnouncementsController extends AnnouncementsAppController {
  */
 	public function setting() {
 		//編集権限チェック
-		if (! $this->viewVars['contentEditable']) {
-			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
-		}
+		$this->__validateEditable();
 
 		$this->layout = 'NetCommons.modal';
 		$this->view();
-		$this->set('title_for_layout', __d('announcements', 'plugin_name'));
 	}
 
 /**
  * edit method
  *
  * @return void
+ * @throws ForbiddenException
  */
 	public function edit() {
 		//編集権限チェック
-		if (! $this->viewVars['contentEditable']) {
-			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
-		}
+		$this->__validateEditable();
 
-		//POSTチェック
+		//登録処理
 		if ($this->request->isPost()) {
 			//公開権限チェック
 			if (! isset($this->data['Announcement']['status'])) {
@@ -149,18 +145,21 @@ class AnnouncementsController extends AnnouncementsAppController {
 		//最新データ取得
 		$this->view();
 
-		//コメントデータ取得
+		//render
 		if ($this->request->isPost()) {
+			//登録後のrender
 			$results = array('announcement' => $this->viewVars['announcement']);
 			$this->renderJson($results, __d('net_commons', 'Successfully finished.'));
+
 		} else {
-			$content_key = $this->viewVars['announcement']['Announcement']['key'];
+			//コメントデータ取得
+			$contentKey = $this->viewVars['announcement']['Announcement']['key'];
 			$view = $this->requestAction(
-					'/comments/comments/index/announcements/' . $content_key . '.json', array('return'));
+					'/comments/comments/index/announcements/' . $contentKey . '.json', array('return'));
 			$comments = json_decode($view, true);
 			//JSON形式で戻す
 			$results = Hash::merge($comments['results'], array('announcement' => $this->viewVars['announcement']));
-
+			//表示render
 			$this->renderJson($results);
 		}
 	}
@@ -171,8 +170,24 @@ class AnnouncementsController extends AnnouncementsAppController {
  * @return void
  */
 	public function token() {
+		//編集権限チェック
+		$this->__validateEditable();
+
 		$this->view();
 		$this->render('Announcements/token', false);
+	}
+
+/**
+ * __validateEditable method
+ *
+ * @return void
+ * @throws ForbiddenException
+ */
+	private function __validateEditable() {
+		//編集権限チェック
+		if (! $this->viewVars['contentEditable']) {
+			throw new ForbiddenException(__d('net_commons', 'Security Error! Unauthorized input.'));
+		}
 	}
 
 }
