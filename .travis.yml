@@ -12,6 +12,7 @@ sudo: false
 env:
   matrix:
     - NETCOMMONS_VERSION=master DB=mysql
+    - NETCOMMONS_VERSION=master DB=mariadb
   global:
     - secure: "TTEVvTjbwUpxFv+KI5ABe5kR25AzbktixeBYmeJ+xZn99fpW2GZ4slLwVmAL6+/qnXez06tKJalSbU5D4Z+s12c0WEbo2vLgviYrhe4/iW0Pzry3CCTrWVXE/F5KlzSH3BWIt1hIG3Qkjk4K0FqfmXDlvt4Tg4Jmq5oUhpHf5gI="
     - GIT_COMMITTER_NAME=s-nakajima
