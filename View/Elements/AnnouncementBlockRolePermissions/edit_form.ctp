@@ -12,8 +12,6 @@
 
 <?php echo $this->NetCommonsForm->hidden('AnnouncementSetting.use_workflow'); ?>
 
-<?php echo $this->BlockRolePermissionForm->contentPublishablePermission(); ?>
-
 <?php echo $this->element('Blocks.block_approval_setting', array(
 		'model' => 'AnnouncementSetting',
 		'useWorkflow' => 'use_workflow',
