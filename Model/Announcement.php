@@ -161,6 +161,7 @@ class Announcement extends AnnouncementsAppModel {
 		}
 		$announcement = $this->find('first', array(
 			'recursive' => 0,
+			'fields' => array('Announcement.*'),
 			'conditions' => $this->getBlockConditionById($conditions),
 		));
 		if (!$announcement) {

@@ -65,6 +65,7 @@ class AnnouncementGetAnnouncementTest extends WorkflowGetTest {
 
 		//期待値
 		$expected = $this->Announcement->findById($announcementId);
+		$expected = Hash::remove($expected, 'Block');
 
 		//テスト実施
 		$result = $this->Announcement->getAnnouncement();
@@ -86,6 +87,7 @@ class AnnouncementGetAnnouncementTest extends WorkflowGetTest {
 
 		//期待値
 		$expected = $this->Announcement->findById($announcementId);
+		$expected = Hash::remove($expected, 'Block');
 
 		//テスト実施
 		$result = $this->Announcement->getAnnouncement();
