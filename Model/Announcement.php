@@ -94,7 +94,7 @@ class Announcement extends AnnouncementsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$this->validate += array_merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'block_id' => array(
 				'numeric' => array(
 					'rule' => array('numeric'),
