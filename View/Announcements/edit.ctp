@@ -33,7 +33,7 @@ $announcement = NetCommonsAppController::camelizeKeyRecursive(array('announcemen
 		<?php echo $this->NetCommonsForm->end(); ?>
 
 		<?php if ($this->Workflow->canDelete('Announcements.Announcement', $this->request->data) &&
-						Hash::get($this->request->data, 'Announcement.id')) : ?>
+						isset($this->request->data['Announcement']['id'])) : ?>
 			<div class="panel-footer text-right">
 				<?php echo $this->element('Announcements.Announcements/delete_form', array(
 					'url' => NetCommonsUrl::blockUrl(array('action' => 'delete', 'key' => $this->data['Announcement']['key']))

@@ -23,7 +23,7 @@
 		<?php echo $this->Workflow->buttons('Announcement.status', NetCommonsUrl::backToIndexUrl('default_setting_action')); ?>
 	<?php echo $this->NetCommonsForm->end(); ?>
 
-	<?php if (Hash::get($this->request->data, 'Announcement.id')) : ?>
+	<?php if (isset($this->request->data['Announcement']['id'])) : ?>
 		<div class="panel-footer text-right">
 			<?php echo $this->element('Announcements.Announcements/delete_form', array(
 				'url' => NetCommonsUrl::actionUrl(array(

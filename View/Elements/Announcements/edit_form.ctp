@@ -30,6 +30,6 @@
 	<?php echo $this->element('Blocks.public_type'); ?>
 	<?php echo $this->element(
 			'Blocks.modifed_info',
-			array('displayModified' => (bool)Hash::get($this->request->data, 'Announcement.id'))
+			array('displayModified' => isset($this->request->data['Announcement']['id']))
 		); ?>
 <?php endif;
