@@ -20,8 +20,8 @@ $announcement = NetCommonsAppController::camelizeKeyRecursive(array('announcemen
 	ng-init="initialize(<?php echo h(json_encode($announcement)); ?>)">
 
 	<div class="panel panel-default" >
-		<div class="panel-body">
-			<?php echo $this->NetCommonsForm->create('Announcement'); ?>
+		<?php echo $this->NetCommonsForm->create('Announcement'); ?>
+			<div class="panel-body">
 				<?php echo $this->element('Announcements/edit_form'); ?>
 
 				<hr />
