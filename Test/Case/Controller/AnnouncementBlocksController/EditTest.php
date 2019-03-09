@@ -47,7 +47,7 @@ class AnnouncementBlocksControllerEditTest extends BlocksControllerEditTest {
 		$frameId = '6';
 
 		if ($isEdit) {
-			$blockId = '4';
+			$blockId = '2';
 			$blockKey = 'block_3';
 			$anouncementId = '4';
 			$anouncementKey = 'announcement_3';
@@ -154,7 +154,7 @@ class AnnouncementBlocksControllerEditTest extends BlocksControllerEditTest {
  * @return void
  */
 	public function dataProviderDelete() {
-		$blockId = '4';
+		$blockId = '2';
 
 		$data = array(
 			'Block' => array(
