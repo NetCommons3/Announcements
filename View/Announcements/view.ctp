@@ -23,7 +23,9 @@
 <?php endif; ?>
 
 <?php if ($announcement['content']) : ?>
-	<?php echo $announcement['content']; ?>
+	<article>
+		<?php echo $announcement['content']; ?>
+	</article>
 <?php else : ?>
 		<article>
 			<?php echo __d('net_commons', 'Not found %s.', __d('announcements', 'Content')); ?>
