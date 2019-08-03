@@ -60,7 +60,7 @@ class AnnouncementGetAnnouncementTest extends WorkflowGetTest {
  */
 	public function testGetAnnouncementWOContentEditable() {
 		//事前データセット
-		Current::$current['Permission']['content_editable']['value'] = false;
+		Current::writePermission('2', 'content_editable', false);
 		$announcementId = '1';
 
 		//期待値
@@ -82,6 +82,7 @@ class AnnouncementGetAnnouncementTest extends WorkflowGetTest {
  */
 	public function testGetAnnouncementContentEditable() {
 		//事前データセット
+		Current::writePermission('2', 'content_editable', true);
 		$announcementId = '2';
 
 		//期待値
