@@ -78,6 +78,14 @@ class AnnouncementsController extends AnnouncementsAppController {
  * @return void
  */
 	public function edit() {
+		//お知らせは、新規登録と編集が同じアクションであるため、block_idにあたる部分に
+		//不正な文字を入力しても、無視されてしまうため、チェック処理を別途追加。
+		if (empty($this->params['block_id']) &&
+				!empty($this->params['pass'][0]) &&
+				!is_numeric($this->params['pass'][0])) {
+			return $this->throwBadRequest();
+		}
+
 		if ($this->request->is('post') || $this->request->is('put')) {
 			$data = $this->data;
 			$data['Announcement']['status'] = $this->Workflow->parseStatus();
