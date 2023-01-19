@@ -130,6 +130,12 @@ class Announcement extends AnnouncementsAppModel {
  * @see Model::save()
  */
 	public function beforeSave($options = array()) {
+		// 新規登録時でCurrent Frame.block_idがnullならCurrent Frame.block_idをセットする
+		// ここでFrame.block_idをセットしておかないと新着プラグインにFrame.idが登録されない。
+		// @see app/Plugin/Topics/Model/Behavior/TopicsBaseBehavior.php:109
+		if (Current::read('Frame.block_id') === null) {
+			Current::write('Frame.block_id', Current::read('Block.id'));
+		}
 		$this->loadModels([
 			'AnnouncementSetting' => 'Announcements.AnnouncementSetting',
 		]);
